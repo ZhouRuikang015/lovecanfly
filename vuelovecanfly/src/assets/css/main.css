@@ -1,0 +1,89 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body,
+#app,
+.wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    /*font-family: "Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC","Microsoft YaHei","微软雅黑",Arial,sans-serif;*/
+    font-family:"Ubuntu", "Roboto", "Open Sans", "Microsoft YaHei", sans-serif;
+}
+
+a {
+    text-decoration: none
+}
+
+.content-box {
+    position: absolute;
+    left: 200px;
+    right: 0;
+    top: 54px;
+    bottom: 0;
+    padding-bottom: 30px;
+    -webkit-transition: left .3s ease-in-out;
+    transition: left .3s ease-in-out;
+}
+
+.content {
+    width: auto;
+    height: 100%;
+    padding: 10px;
+    overflow-y: scroll;
+    box-sizing: border-box;
+}
+
+.content-collapse {
+    left: 65px;
+}
+
+.container {
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+/*分页*/
+.pagination {
+    margin: 20px 0;
+    text-align: right;
+}
+
+
+.scrollbar {
+    width: 100%;
+    overflow: auto;
+    float: right;
+    margin: 0px;
+    border: none;
+}
+
+.scrollbar::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 9px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 0px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.2);
+    background: rgba(158, 158, 158, 0.6);
+    border-radius:5px;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.2);
+    background: #ededed;
+
+}
+
+

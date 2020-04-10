@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.RecordMapper">
+
+    <resultMap id="RecordResultMap" type="me.zhouruikang.lovecanfly.entity.Record">
+        <id property="recordId" column="record_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="newComments" column="new_comments" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="commentsCount" column="comments_count" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="newViews" column="new_views" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <result property="viewsCount" column="views_count" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <result property="recordCreateTime" column="record_create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+<!--    最新的记录-->
+    <select id="selectLatestRecordByUserId" resultMap="RecordResultMap">
+        select * from record
+        where user_id = #{userId}
+        and record_create_time = (select max(record_create_time) from record where user_id = #{userId} )
+    </select>
+
+<!--    最近一周的记录信息 12为系统日程记录用户-->
+    <select id="selectScheduleRecordInLatestWeek" resultMap="RecordResultMap">
+      select * from record
+      where user_id = 12
+      order by record_create_time desc
+      limit 7
+    </select>
+
+<!--    每次登入插入记录-->
+    <insert id="insertRecord" parameterType="me.zhouruikang.lovecanfly.entity.Record">
+        insert into record (user_id,new_comments, comments_count, new_views, views_count, record_create_time)
+        values ( #{userId}, #{newComments}, #{commentsCount}, #{newViews}, #{viewsCount}, #{recordCreateTime})
+    </insert>
+
+</mapper>

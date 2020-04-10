@@ -1,0 +1,17 @@
+.header{
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.collapse-btn:hover{
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.login-wrap{
+    background: #324157;
+}
+
+.tags-li.active {
+    border: 1px solid #171f26;
+    background-color: #171f26;
+}
+
