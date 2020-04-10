@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.UserMapper">
+
+    <resultMap id="UserResultMap" type="me.zhouruikang.lovecanfly.entity.User">
+        <id property="userId" column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="username" column="username" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="password" column="password" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="email" column="email" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+        <result property="registerTime" column="register_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+        <collection property="roles" ofType="me.zhouruikang.lovecanfly.entity.Role">
+            <id property="roleId" column="role_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <result property="roleName" column="role_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <result property="roleNameZh" column="role_name_zh" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+<!--    用户名查用户-->
+    <select id="selectUserByUsername" resultMap="UserResultMap">
+        select u.*,r.* from user u, user_role_relation urr, role r
+        where u.user_id = urr.user_id and urr.role_id = r.role_id
+        and u.username = #{s}
+    </select>
+
+<!--    昵称关键词查用户，管理员用-->
+    <select id="selectUsersByNicknameKeyword" resultMap="UserResultMap">
+        select u.*,r.* from user u, user_role_relation urr, role r
+        where u.user_id = urr.user_id and urr.role_id = r.role_id
+        and u.user_id not in (
+        select u.user_id from user u,user_role_relation urr
+        where u.user_id = urr.user_id
+        and urr.role_id = 1
+        )
+        <if test="nicknameKeyword!=null and nicknameKeyword!='' ">
+            and u.nickname like concat('%',#{nicknameKeyword},'%')
+        </if>
+        <choose>
+            <when test="status == 2 ">
+                and u.status = 2
+            </when>
+            <otherwise>
+                and u.status != 2
+            </otherwise>
+        </choose>
+    </select>
+
+<!--    id查用户-->
+    <select id="selectUserByUserId" resultMap="UserResultMap">
+        select u.*,r.* from user u, user_role_relation urr, role r
+        where u.user_id = urr.user_id and urr.role_id = r.role_id
+        and u.user_id = #{userId}
+    </select>
+
+<!--    注册用户-->
+    <insert id="insertRegisterUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into user set username=#{username},password=#{password},nickname=#{nickname},email = #{email},gender = #{gender}
+    </insert>
+
+    <!-- 接上 -->
+    <insert id="insertRegisterURR">
+        insert into user_role_relation set user_id = #{userId}
+    </insert>
+
+<!--    管理员改用户状态-->
+    <update id="updateUserByStatus">
+        UPDATE user set status=#{status} WHERE user_id=#{userId}
+    </update>
+
+
+
+    <resultMap id="RoleResultMap" type="me.zhouruikang.lovecanfly.entity.Role">
+        <id property="roleId" column="role_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="roleName" column="role_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="roleNameZh" column="role_name_zh" javaType="java.lang.String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+<!--    所有角色-->
+    <select id="selectRoles" resultMap="RoleResultMap">
+        select * from role
+    </select>
+
+<!--    删用户角色关联-->
+    <delete id="deleteURRByUserId">
+        delete from user_role_relation where user_id = #{userId}
+    </delete>
+
+<!--    给用户新增角色-->
+    <insert id="insertURRByUserIdAndRoleIds">
+        insert into user_role_relation(user_id, role_id) values
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId},#{roleId})
+        </foreach>
+    </insert>
+
+<!--    删除用户-->
+    <delete id="deleteUserByUserId">
+        delete from user where user_id = #{userId}
+    </delete>
+
+</mapper>

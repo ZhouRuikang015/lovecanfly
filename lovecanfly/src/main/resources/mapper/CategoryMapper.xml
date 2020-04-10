@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.CategoryMapper">
+
+    <resultMap id="CategoryResultMap" type="me.zhouruikang.lovecanfly.entity.Category">
+        <id property="categoryId" column="category_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="categoryName" column="category_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="categoryDescribe" column="category_describe" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="articleNums" column="article_nums" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="nickname" column="nickname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+<!--    已发布文章的分类数-->
+    <select id="selectCategoriesUsedCount" resultType="int">
+      select count(distinct ca.category_name) from category ca
+      inner join article a
+      on ca.category_id = a.category_id
+      and a.status = 1
+    </select>
+
+<!--    总分类数-->
+    <select id="selectCategoriesCount" resultType="int">
+        select count(distinct ca.category_name) from category ca
+        <if test="userId != null and userId!=-1">
+            where ca.user_id = #{userId}
+        </if>
+    </select>
+
+<!--    查询所有分类-->
+    <select id="selectCategories" resultMap="CategoryResultMap">
+        select ca.*,count(a.category_id) article_nums, u.nickname from category ca
+        left join article a on ca.category_id = a.category_id
+        left join user u on u.user_id = ca.user_id
+        <where>
+            <if test="userId!=null and userId!=-1">
+                and ca.user_id = #{userId}
+            </if>
+            <if test="status!=-1">
+                and a.status = #{status}
+            </if>
+        </where>
+        group by ca.category_id
+        order by article_nums desc
+    </select>
+
+<!--    查询所有已发布文章的分类-->
+    <select id="selectCategoriesUsed" resultMap="CategoryResultMap">
+        select ca.category_name,count(*) article_nums from category ca
+        right join article a on ca.category_id = a.category_id
+        where a.status = 1
+        group by ca.category_name
+        order by article_nums desc
+    </select>
+
+<!--    新增分类-->
+    <insert id="insertCategory">
+        insert into category(user_id, category_name,category_describe)
+        values (#{userId},#{categoryName}, #{categoryDescribe})
+    </insert>
+
+<!--    修改分类-->
+    <update id="updateCategoryByCategoryId">
+        update category set category_name=#{categoryName},category_describe=#{categoryDescribe}
+        where category_id=#{categoryId}
+     </update>
+
+<!--    删除分类-->
+    <delete id="deleteCategoryByCategoryId" parameterType="Integer">
+        delete from category
+        where category_id=#{categoryId}
+    </delete>
+
+</mapper>

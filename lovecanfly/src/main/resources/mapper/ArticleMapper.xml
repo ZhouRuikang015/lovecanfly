@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.ArticleMapper">
+
+    <resultMap id="ArticleResultMap" type="me.zhouruikang.lovecanfly.entity.Article">
+        <id property="articleId" column="article_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="title" column="title" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="content" column="content" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+        <result property="html" column="html" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+        <result property="userId" column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="categoryId" column="category_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="articleTags" column="article_tags" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="summary" column="summary" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="views" column="views" javaType="java.lang.Long" jdbcType="BIGINT"/>
+        <result property="enableComment" column="enable_comment" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+        <result property="createTime" column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+        <result property="categoryName" column="category_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="commentCount" column="comment_count" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="stat" column="stat" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+    </resultMap>
+
+<!--    查询单篇文章-->
+    <select id="selectArticleByArticleId" resultMap="ArticleResultMap">
+        select a.*, c.category_name,u.nickname
+        from article a,category c,user u
+        where a.category_id = c.category_id
+        and a.user_id = u.user_id
+        <if test="status!=-1">
+            and a.status = #{status}
+        </if>
+        and a.article_id = #{articleId}
+    </select>
+
+<!--    查询多篇文章简介-->
+    <select id="selectBriefArticlesByStatus" resultMap="ArticleResultMap">
+        select a.article_id, a.`title`, a.`content`,a.user_id, u.nickname,a.category_id,c.`category_name`,a.`article_tags`,a.summary,a.status,a.views,a.enable_comment,a.`create_time`,a.`update_time`
+        from article a
+        left join category c on a.category_id = c.category_id
+        left join user u on a.user_id = u.user_id
+        <where>
+            <if test="userId!=null and userId!=-1">
+                and a.user_id = #{userId}
+            </if>
+            <if test="status!=-1">
+                and a.status = #{status}
+            </if>
+            <if test="keyword!=null and keyword!='' ">
+                and a.title LIKE concat('%',#{keyword},'%')
+            </if>
+        </where>
+        order by a.update_time desc
+    </select>
+
+<!--    根据文章点击修改访问量+1-->
+    <update id="updateViewsById" parameterType="Integer">
+        UPDATE article set views=views+1 WHERE article_id=#{articleId}
+    </update>
+
+<!--    查询文章总数-->
+    <select id="selectArticlesCount" resultType="int">
+        SELECT count(*) FROM article
+        <where>
+            <if test="status!=-1">
+                and status= #{status}
+            </if>
+            <if test="userId!=null and userId!=-1">
+                and user_id= #{userId}
+            </if>
+        </where>
+    </select>
+
+<!--    查询访问量加和总数-->
+    <select id="selectViewsCount" resultType="long">
+        select sum(views) from article
+        <if test="userId!=null and userId!=-1" >
+            where user_id= #{userId}
+        </if>
+    </select>
+
+<!--    新增文章-->
+    <insert id="insertArticle" parameterType="me.zhouruikang.lovecanfly.entity.Article" useGeneratedKeys="true" keyProperty="articleId" >
+        insert into article(title,content,html,category_id,user_id, article_tags,summary,enable_comment,create_time,update_time,status)
+        values(#{title},#{content},#{html},#{categoryId},#{userId},#{articleTags},#{summary},#{enableComment},#{createTime},#{updateTime},#{status})
+    </insert>
+
+<!--    修改文章-->
+    <update id="updateArticle" parameterType="me.zhouruikang.lovecanfly.entity.Article">
+        update article set title=#{title},content=#{content},html=#{html},category_id=#{categoryId},article_tags=#{articleTags},
+        summary=#{summary},enable_comment=#{enableComment},create_time=#{createTime},update_time=#{updateTime},status=#{status}
+        where article_id=#{articleId}
+    </update>
+
+<!--    批量移除文章至回收箱-->
+    <update id="updateStatusByArticleIds">
+        update article set status = 0
+        where article_id in
+        <foreach collection="articleIds" item="articleId" open="(" close=")" separator=",">
+            #{articleId}
+        </foreach>
+    </update>
+
+<!--    回收箱重新发布-->
+    <update id="updateArticleFromTrash">
+        update article set status = 1
+        where article_id = #{articleId}
+    </update>
+
+<!--    批量彻底删除文章-->
+    <delete id="deleteArticlesByArticleIds">
+        delete from article
+        where article_id in
+        <foreach collection="articleIds" item="articleId" open="(" close=")" separator=",">
+            #{articleId}
+        </foreach>
+    </delete>
+
+<!--    查询某用户某分类下已发布文章-->
+    <select id="selectBriefArticlesByCategoryName" resultMap="ArticleResultMap">
+      select a.article_id, a.`title`, a.`content`,a.user_id, u.nickname,a.category_id,c.`category_name`,a.`article_tags`,a.summary,a.status,a.views,a.enable_comment,a.`create_time`,a.`update_time`
+      from article a left join category c on a.category_id = c.category_id
+      left join user u on a.user_id = u.user_id
+      where c.category_name = #{categoryName}
+      and a.status = 1
+      order by a.update_time desc
+    </select>
+
+<!--    查询某用户某标签下已发布文章-->
+    <select id="selectBriefArticlesByTagName" resultMap="ArticleResultMap">
+      select a.article_id, a.`title`, a.`content`,a.user_id, u.nickname,a.category_id,c.`category_name`,a.`article_tags`,a.summary,a.status,a.views,a.enable_comment,a.`create_time`,a.`update_time`
+      from article a
+      left join category c on a.category_id = c.category_id
+      left join user u on a.user_id = u.user_id
+      left join article_tag_relation atr on a.article_id = atr.article_id
+      left join tag t on atr.tag_id = t.tag_id
+      where a.status = 1
+      and t.tag_name = #{tagName}
+      order by a.update_time desc
+  </select>
+
+<!--    -->
+<!--    以下为归档页-->
+    <resultMap id="TimeLineYearResultMap" type="me.zhouruikang.lovecanfly.entity.TimeLineYear">
+        <result property="year" column="year" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="count" column="count" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="selectTimeLineYear" resultMap="TimeLineYearResultMap">
+        select DATE_FORMAT(update_time,'%Y') as year, count(*) as count
+        from article
+        where status = 1
+        group by year
+        order by year desc
+    </select>
+
+    <resultMap id="TimeLineMonthResultMap" type="me.zhouruikang.lovecanfly.entity.TimeLineMonth">
+        <result property="month" column="month" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <collection property="articles" resultMap="ArticleResultMap"></collection>
+    </resultMap>
+
+    <select id="selectArticlesByYear" resultMap="TimeLineMonthResultMap">
+        select DATE_FORMAT(a.update_time,'%m') month,a.article_id, a.update_time, a.title, c.category_name,u.nickname from article a
+        left join category c on a.category_id = c.category_id
+        left join user u on a.user_id = u.user_id
+        where a.status = 1
+        and DATE_FORMAT(a.update_time,'%Y')=#{year}
+        order by month desc,a.update_time desc
+    </select>
+
+</mapper>

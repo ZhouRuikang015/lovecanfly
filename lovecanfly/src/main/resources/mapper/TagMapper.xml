@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.TagMapper">
+
+    <resultMap id="tagResultMap" type="me.zhouruikang.lovecanfly.entity.Tag">
+        <id property="tagId" column="tag_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="tagName" column="tag_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="articleNums" column="article_nums" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </resultMap>
+
+<!--    已发布文章的标签数统计-->
+    <select id="selectTagsUsedCount" resultType="int">
+        select count( distinct atr.tag_id )  from article a
+        inner join article_tag_relation atr on atr.article_id = a.article_id
+        where a.status = 1
+    </select>
+
+<!--    发布文章时新增多个标签，ignore重复-->
+    <insert id="insertBytagNames">
+        insert ignore into tag(tag_name) values
+        <foreach collection="tagNames" item="tagName" separator=",">
+            (#{tagName})
+        </foreach>
+    </insert>
+
+<!--    标签名称查id-->
+    <select id="selectTagIdsByTagNames" resultType="Integer">
+        select tag_id from tag
+        where tag_name in
+        <foreach collection="tagNames" item="tagName" separator="," open="(" close=")">
+            #{tagName}
+        </foreach>
+    </select>
+
+
+
+
+
+
+    <select id="selectTagsUsed" resultMap="tagResultMap">
+    select t.*,count(*) article_nums from tag t,article a,article_tag_relation atr
+    where t.tag_id = atr.tag_id
+    and atr.article_id = a.article_id
+    and a.status = 1
+    group by t.tag_id
+    order by article_nums desc
+  </select>
+
+    <select id="selectTagsCount">
+    select count(1) from tag
+  </select>
+
+</mapper>

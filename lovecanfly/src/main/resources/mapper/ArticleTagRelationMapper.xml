@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.ArticleTagRelationMapper">
+
+    <resultMap id="ArticleTagRelationResultMap" type="me.zhouruikang.lovecanfly.entity.ArticleTagRelation">
+        <id property="relationId" column="relation_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="articleId" column="article_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="tagId" column="tag_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </resultMap>
+
+<!--    删除与某文章的所有标签间联系-->
+    <delete id="deleteByArticleId" >
+        delete from article_tag_relation
+        where article_id = #{articleId}
+    </delete>
+
+<!--    批量删除与某文章的所有标签间联系-->
+    <delete id="deleteByArticleIds" >
+        delete from article_tag_relation
+        where article_id in
+        <foreach collection="articleIds" item="articleId" separator="," open="(" close=")">
+            #{articleId}
+        </foreach>
+    </delete>
+
+<!--    新增文章后，建立文章与标签间的联系-->
+    <insert id="insertByAidAndTid">
+        insert into article_tag_relation(article_id,tag_id) values
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{articleId},#{tagId})
+        </foreach>
+    </insert>
+
+</mapper>

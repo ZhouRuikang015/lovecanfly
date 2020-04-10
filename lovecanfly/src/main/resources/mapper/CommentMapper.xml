@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.zhouruikang.lovecanfly.dao.CommentMapper">
+
+    <resultMap id="CommentResultMap" type="me.zhouruikang.lovecanfly.entity.Comment">
+        <id property="commentId" column="comment_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="articleId" column="article_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+        <result property="commentatorName" column="commentator_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="commentatorEmail" column="commentator_email" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="commentContent" column="comment_content" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="commentatorLocation" column="commentator_location" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="commentCreateTime" column="comment_create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="replyContent" column="reply_content" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="replyCreateTime" column="reply_create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+        <result property="title" column="title" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+    </resultMap>
+
+<!--    查询评论总数-->
+    <select id="selectCommentsCount" resultType="int">
+        select count(1) from article a,comment c
+        where a.article_id = c.article_id
+        <if test="userId != null and userId!=-1">
+            and a.user_id = #{userId};
+        </if>
+    </select>
+
+<!--    查询所有评论-->
+    <select id="selectComments" resultMap="CommentResultMap">
+        select ac.*, a.title,u.user_id, u.nickname from comment ac
+        left join article a on a.article_id = ac.article_id left join user u on a.user_id = u.user_id
+        <where>
+            <if test="status!=-1">
+                and ac.status = #{status}
+            </if>
+            <if test="titleKeyword!=null and titleKeyword!='' ">
+                and a.title LIKE concat('%',#{titleKeyword},'%')
+            </if>
+            <if test="contentKeyword!=null and contentKeyword!='' ">
+                and ac.comment_content LIKE concat('%',#{contentKeyword},'%')
+            </if>
+            <if test="articleId!=null and articleId!=-1">
+                and a.article_id = #{articleId}
+            </if>
+            <if test="userId!=null and userId!=-1">
+                and a.user_id = #{userId}
+            </if>
+        </where>
+        order by comment_create_time desc
+    </select>
+
+<!--    新增评论-->
+    <insert id="insertCommentByArticleId" parameterType="me.zhouruikang.lovecanfly.entity.Comment">
+        insert into comment(article_id,commentator_name,commentator_email,comment_content,comment_create_time,commentator_location)
+        values(#{articleId},#{commentatorName},#{commentatorEmail},#{commentContent},#{commentCreateTime},#{commentatorLocation})
+    </insert>
+
+<!--    作者回复评论-->
+    <update id="updateReplyByCommentId">
+        update comment set reply_content = #{replyContent},reply_create_time = #{replyCreateTime}
+        where comment_id = #{commentId}
+    </update>
+
+<!--    修改评论状态-->
+    <update id="updateStatusByCommentId">
+        update comment set status = #{status}
+        where comment_id=#{commentId}
+    </update>
+
+<!--    删除评论-->
+    <delete id="deleteCommentByCommentId" >
+        delete from comment
+        where comment_id=#{commentId}
+    </delete>
+
+</mapper>
