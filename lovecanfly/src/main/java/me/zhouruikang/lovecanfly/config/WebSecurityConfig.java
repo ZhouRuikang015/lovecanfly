@@ -54,7 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/home/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/comment/").permitAll()
                 .antMatchers("/admin/**").hasRole("admin")
                 .anyRequest().authenticated()//其他的路径都是登录后即可访问
                 .and()
