@@ -46,8 +46,11 @@ export default {
         // 用户名下拉菜单选择事件
         handleCommand(command) {
             if (command == 'logout') {
-                this.$store.commit('logout');
-                this.$router.replace('/login');
+                postRequest('/logout').then( resp => {
+                    if (resp.status == 200) {
+                        this.$store.commit('logout');
+                        this.$router.replace('/login');
+                    }})
             }else if (command == 'home'){
                 this.$router.push('/');
             }

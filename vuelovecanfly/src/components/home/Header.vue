@@ -147,9 +147,11 @@
     methods: {
       handleCommand(command) {
         if (command == 'logout') {
-          this.$store.commit('logout');
-          this.$message.success('已退出登录');
-          this.$router.push('/');
+          postRequest('/logout').then( resp => {
+            if (resp.status == 200) {
+              this.$store.commit('logout');
+              this.$router.push('/');
+            }})
         } else if (command == 'toManage') {
           this.$router.push('/manage');
         }

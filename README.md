@@ -22,8 +22,6 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 
 **注：上述项目演示只开放查询和部分post权限，其他权限都不具备。完整权限需自己本地或服务器部署。**
 
-</br>
-
 ### 运行效果图
 
 - 广场页
@@ -37,8 +35,6 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 - 后台页
 
 ![](http://img.zhouruikang.cn/2020/0409/lovecanfly01rr.png)
-
-</br>
 
 ### 部署
 
@@ -68,8 +64,6 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 
 2. [Vue+Springboot项目部署（二）启动](http://www.zhouruikang.cn/2020/0326/vue-springboot-deploy02.html)
 
-</br>
-
 ### 技术选型
 
 #### 后端
@@ -92,8 +86,6 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 - Element : [UI库](https://element.eleme.io/)
 - v-charts : [基于Echarts的图表框架](https://v-charts.js.org/)
 - mavon-editor : [基于vue的markdown编辑器](https://github.com/hinesboy/mavonEditor)
-
-
 
 ## 主要参考
 
