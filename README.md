@@ -34,11 +34,11 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 
 - 管理页
 
-![](http://img.zhouruikang.cn/2020/0409/lovecanfly01rr.png )
+![](http://img.zhouruikang.cn/2020/0409/lovecanfly01rrr.png )
 
 ### 部署
 
-`lovecanfly`为Springboot后端，`vuelovecanfly`为Vue前端、
+`lovecanfly`为Springboot后端，`vuelovecanfly`为Vue前端
 
 #### 本地部署
 
@@ -79,7 +79,7 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 #### 前端
 
 - Vue四件套
-    - ·Vue-cli4 : [Vue.js 开发的标准工具](https://cli.vuejs.org/)
+    - Vue-cli4 : [Vue.js 开发的标准工具](https://cli.vuejs.org/)
     - Vue-router : [路由框架](https://router.vuejs.org/)
     - Vuex : [全局状态管理框架](https://vuex.vuejs.org/)
     - Axios : [前端HTTP框架](https://github.com/axios/axios)
