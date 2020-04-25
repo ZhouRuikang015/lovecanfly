@@ -32,9 +32,9 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 
 ![](http://img.zhouruikang.cn/2020/0409/lovecanfly03.png)
 
-- 后台页
+- 管理页
 
-![](http://img.zhouruikang.cn/2020/0409/lovecanfly01rr.png)
+![](http://img.zhouruikang.cn/2020/0409/lovecanfly01rr.png )
 
 ### 部署
 
