@@ -60,9 +60,9 @@ Lovecanfly 是一个前后端分离的多用户博客系统，采用 SpringBoot+
 
 以下是记录我前后端分离nginx静态部署的全过程，提供一个参考～
 
-1. [Vue+Springboot项目部署（一）环境准备](http://www.zhouruikang.cn/2020/0325/vue-springboot-deploy01.html)
+1. [Vue+Springboot项目部署（一）环境准备](http://www.zhouruikang.cn/2020/0325/vue-springboot-deploy01)
 
-2. [Vue+Springboot项目部署（二）启动](http://www.zhouruikang.cn/2020/0326/vue-springboot-deploy02.html)
+2. [Vue+Springboot项目部署（二）启动](http://www.zhouruikang.cn/2020/0326/vue-springboot-deploy02)
 
 ### 技术选型
 
